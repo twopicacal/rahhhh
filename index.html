@@ -83,17 +83,11 @@
 
                 <div class="h-px bg-secondary-dark my-4"></div>
 
-                <!-- Playlist Management -->
-                <h3 class="text-text-muted text-xs uppercase tracking-wider mb-2 flex justify-between items-center">
-                    <span>Your Playlists</span>
-                    <button id="create-playlist-btn" class="text-text-muted hover:text-accent-green p-1 rounded-full" title="Create New Playlist">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                    </button>
-                </h3>
-                <ul id="playlists-list" class="space-y-2 text-text-muted text-sm">
-                    <!-- Dynamic Playlists will be injected here -->
-                    <li id="loading-playlists" class="text-xs text-text-muted">Loading playlists...</li>
-                </ul>
+                <!-- Simple Information Block -->
+                <div class="p-2 text-text-muted text-xs bg-card-dark rounded-lg">
+                    <p class="font-bold text-accent-green mb-1">Song List Managed in Code</p>
+                    <p>To add or remove songs, edit the **`CUSTOM_SONG_URLS_STRING`** variable in the script section below.</p>
+                </div>
             </div>
         </div>
 
@@ -101,20 +95,17 @@
         <div class="flex-grow p-4 md:p-6 bg-secondary-dark rounded-lg m-2 md:m-4 overflow-y-auto playlist-scroll">
             <header class="mb-8 flex justify-between items-center">
                 <div>
-                    <h1 id="main-header-title" class="text-4xl md:text-5xl font-extrabold mb-2">All Songs</h1>
-                    <p id="main-header-subtitle" class="text-text-muted">Master list of all available tracks.</p>
+                    <h1 id="main-header-title" class="text-4xl md:text-5xl font-extrabold mb-2">StreamWave Library</h1>
+                    <p id="main-header-subtitle" class="text-text-muted">Master list of all available tracks (Hardcoded + Custom Links).</p>
                 </div>
-                <button id="add-song-btn" class="bg-accent-green text-black font-bold py-2 px-4 rounded-full shadow-lg hover:bg-opacity-80 transition hidden md:block" title="Add New Song via Link">
-                    + Add Song Link
-                </button>
             </header>
 
-            <!-- Playlist Table/List -->
+            <!-- Song List -->
             <div class="bg-card-dark rounded-xl p-4 shadow-2xl">
                 <div class="grid grid-cols-[30px_1fr_150px_80px] text-text-muted text-xs uppercase tracking-wider border-b border-text-muted/20 pb-2 mb-3 px-2">
                     <span>#</span>
                     <span>Title</span>
-                    <span class="hidden md:block">Album</span>
+                    <span class="hidden md:block">Album / Source</span>
                     <span>Duration</span>
                 </div>
                 <div id="playlist-container" class="space-y-1">
@@ -171,71 +162,38 @@
             <input type="range" id="volume-control" value="100" min="0" max="100" class="w-24 h-1 appearance-none bg-text-muted/40 rounded-full cursor-pointer">
         </div>
     </footer>
-    
-    <!-- Modals Container -->
-    <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 items-center justify-center p-4">
-        
-        <!-- Add Song Modal -->
-        <div id="add-song-modal" class="bg-secondary-dark p-6 rounded-xl shadow-2xl w-full max-w-md hidden">
-            <h2 class="text-2xl font-bold mb-4">Add Music Link</h2>
-            <form id="add-song-form" class="space-y-4">
-                <p class="text-sm text-text-muted">You can link to an MP3 file hosted on a public service like Google Drive (ensure it's publicly shareable).</p>
-                <div>
-                    <label for="song-title-input" class="block text-sm font-medium mb-1">Title</label>
-                    <input type="text" id="song-title-input" required class="w-full p-2 rounded-lg bg-card-dark border border-secondary-dark focus:border-accent-green focus:ring-0">
-                </div>
-                <div>
-                    <label for="song-artist-input" class="block text-sm font-medium mb-1">Artist</label>
-                    <input type="text" id="song-artist-input" required class="w-full p-2 rounded-lg bg-card-dark border border-secondary-dark focus:border-accent-green focus:ring-0">
-                </div>
-                <div>
-                    <label for="song-url-input" class="block text-sm font-medium mb-1">MP3 URL / Link</label>
-                    <input type="url" id="song-url-input" placeholder="https://..." required class="w-full p-2 rounded-lg bg-card-dark border border-secondary-dark focus:border-accent-green focus:ring-0">
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" id="cancel-add-song-btn" class="text-text-muted hover:text-text-light transition px-4 py-2 rounded-full">Cancel</button>
-                    <button type="submit" class="bg-accent-green text-black font-semibold px-4 py-2 rounded-full hover:opacity-90">Add Song</button>
-                </div>
-                <p id="add-song-error" class="text-alert-red text-sm hidden">Please ensure all fields are filled and the URL is valid.</p>
-            </form>
-        </div>
-
-        <!-- Create Playlist Modal -->
-        <div id="create-playlist-modal" class="bg-secondary-dark p-6 rounded-xl shadow-2xl w-full max-w-sm hidden">
-            <h2 class="text-2xl font-bold mb-4">Create New Playlist</h2>
-            <form id="create-playlist-form" class="space-y-4">
-                <div>
-                    <label for="playlist-name-input" class="block text-sm font-medium mb-1">Playlist Name</label>
-                    <input type="text" id="playlist-name-input" required class="w-full p-2 rounded-lg bg-card-dark border border-secondary-dark focus:border-accent-green focus:ring-0" placeholder="My New Vibe">
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" id="cancel-create-playlist-btn" class="text-text-muted hover:text-text-light transition px-4 py-2 rounded-full">Cancel</button>
-                    <button type="submit" class="bg-accent-green text-black font-semibold px-4 py-2 rounded-full hover:opacity-90">Create Playlist</button>
-                </div>
-                <p id="create-playlist-error" class="text-alert-red text-sm hidden">Playlist name is required.</p>
-            </form>
-        </div>
-    </div>
 
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // Set Firestore log level for debugging
-        setLogLevel('Debug');
+        // Removed Firestore imports for simplicity
 
-        // --- Firebase Configuration and Initialization ---
+        // --- Firebase Configuration (Authentication Only) ---
+        // This is kept only to satisfy the environment requirements for authentication.
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        let auth, userId = null;
 
-        let app, db, auth, userId = null;
-        let isAuthReady = false;
 
-        // The master list of all songs, including defaults and user-added ones
+        // ----------------------------------------------------------------
+        // V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
+        //  THIS IS WHERE YOU PASTE YOUR CUSTOM MP3 LINKS
+        //  - Add one link per line or keep them separated by a comma (,)
+        //  - Make sure your links start with 'http' or 'https'
+        // ----------------------------------------------------------------
+        const CUSTOM_SONG_URLS_STRING = `
+            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3,
+            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3,
+            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3,
+            // Add more MP3 links here, separated by a comma.
+        `;
+        // ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+        // ----------------------------------------------------------------
+
+
+        // --- Default Songs (Hardcoded) ---
         const defaultSongs = [
             {
                 id: 'default-1',
@@ -266,9 +224,12 @@
             }
         ];
         
-        let allSongs = [...defaultSongs]; // The list currently loaded in the UI
-        let userPlaylists = [];
-        let activeView = 'allSongs'; // 'allSongs' or a playlist document ID
+        // --- Song List State ---
+        let customSongs = []; // Songs parsed from the CUSTOM_SONG_URLS_STRING
+        let allSongs = []; // The combined master list
+        let currentSongIndex = -1;
+        let isPlaying = false;
+
 
         // --- DOM Elements ---
         const audio = document.getElementById('audio-player');
@@ -285,22 +246,38 @@
         const playerTitle = document.getElementById('player-title');
         const playerArtist = document.getElementById('player-artist');
         const playerCover = document.getElementById('player-cover');
-        const playlistsList = document.getElementById('playlists-list');
-        const mainHeaderTitle = document.getElementById('main-header-title');
-        const mainHeaderSubtitle = document.getElementById('main-header-subtitle');
-        const addSongBtn = document.getElementById('add-song-btn');
         const homeNav = document.getElementById('home-nav');
 
-        // Modal Elements
-        const modalContainer = document.getElementById('modal-container');
-        const addSongModal = document.getElementById('add-song-modal');
-        const createPlaylistModal = document.getElementById('create-playlist-modal');
-        const createPlaylistBtn = document.getElementById('create-playlist-btn');
-
-        let currentSongIndex = -1;
-        let isPlaying = false;
 
         // --- Utility Functions ---
+
+        /**
+         * Parses the raw URL string into structured song objects.
+         */
+        function parseCustomUrls(urlStr) {
+            // Split by comma or newline, trim whitespace, and filter for valid http/https links
+            const urls = urlStr.split(/[\s,]+/).map(url => url.trim()).filter(url => url.startsWith('http'));
+            
+            return urls.map((url, index) => ({
+                id: `custom-${index + 1}`,
+                // Generic metadata for user-added songs
+                title: `Custom Track ${index + 1}`,
+                artist: `User Upload`,
+                album: `Custom Links`,
+                duration: "??",
+                src: url,
+                cover: "https://placehold.co/60x60/535353/ffffff?text=UPL"
+            }));
+        }
+
+        /**
+         * Returns the combined master list of hardcoded and custom-added songs.
+         */
+        function getFullSongLibrary() {
+            // Recalculate the custom list from the source string
+            customSongs = parseCustomUrls(CUSTOM_SONG_URLS_STRING);
+            return [...defaultSongs, ...customSongs];
+        }
 
         /**
          * Formats seconds into MM:SS string.
@@ -311,34 +288,8 @@
             return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
         }
         
-        /**
-         * Closes all modals.
-         */
-        function closeModal() {
-            modalContainer.classList.add('hidden');
-            modalContainer.classList.remove('flex');
-            addSongModal.classList.add('hidden');
-            createPlaylistModal.classList.add('hidden');
-        }
-
-        /**
-         * Opens a specific modal.
-         * @param {HTMLElement} modalEl - The modal element to show.
-         */
-        function openModal(modalEl) {
-            modalContainer.classList.remove('hidden');
-            modalContainer.classList.add('flex');
-            modalEl.classList.remove('hidden');
-        }
-
+        
         // --- Core Player Functions ---
-
-        /**
-         * Finds a song by its unique ID.
-         */
-        function getSongById(id) {
-            return allSongs.find(song => song.id === id);
-        }
 
         /**
          * Loads and prepares a song for playback.
@@ -350,7 +301,6 @@
             currentSongIndex = index;
             const song = allSongs[currentSongIndex];
             
-            // Check if song has a valid ID for playback
             if (!song || !song.src) {
                 console.error("Attempted to load invalid song:", song);
                 return;
@@ -380,8 +330,11 @@
          */
         function togglePlayPause() {
             if (currentSongIndex === -1) {
-                loadSong(0);
-                playSong();
+                // If no song loaded, load the first one from the current view list
+                if (allSongs.length > 0) {
+                    loadSong(0);
+                    playSong();
+                }
                 return;
             }
 
@@ -398,14 +351,8 @@
         function playSong() {
             if (currentSongIndex === -1) return;
             audio.play().catch(error => {
-                console.error("Playback failed (possibly due to browser auto-play policy):", error);
-                // Inform user about issue without using alert()
-                const playbackErrorEl = document.getElementById('add-song-error');
-                if (playbackErrorEl) {
-                    playbackErrorEl.textContent = "Playback failed. You may need to interact with the page first, or the link may be invalid.";
-                    playbackErrorEl.classList.remove('hidden');
-                    setTimeout(() => playbackErrorEl.classList.add('hidden'), 5000);
-                }
+                console.error("Playback failed (possibly due to browser auto-play policy or bad link):", error);
+                // Simple console message for playback failure
             });
             isPlaying = true;
             playIcon.classList.add('hidden');
@@ -426,6 +373,7 @@
          * Plays the next song in the playlist.
          */
         function playNext() {
+            if (allSongs.length === 0) return;
             let nextIndex = (currentSongIndex + 1) % allSongs.length;
             loadSong(nextIndex);
             playSong();
@@ -435,6 +383,7 @@
          * Plays the previous song in the playlist.
          */
         function playPrev() {
+            if (allSongs.length === 0) return;
             let prevIndex = (currentSongIndex - 1 + allSongs.length) % allSongs.length;
             loadSong(prevIndex);
             playSong();
@@ -443,13 +392,13 @@
         // --- UI Rendering ---
 
         /**
-         * Renders the current list of songs (allSongs or a playlist) into the main content area.
+         * Renders the current list of songs into the main content area.
          */
         function renderSongList(songsToRender) {
             playlistContainer.innerHTML = ''; // Clear existing content
             
             if (songsToRender.length === 0) {
-                playlistContainer.innerHTML = '<p class="text-text-muted p-4 text-center">No songs in this playlist. Use the "+ Add Song Link" button to add a new track!</p>';
+                playlistContainer.innerHTML = '<p class="text-text-muted p-4 text-center">No songs in the library. Add MP3 links to the **CUSTOM_SONG_URLS_STRING** in the code!</p>';
                 return;
             }
 
@@ -484,238 +433,42 @@
         }
         
         /**
-         * Renders the list of user playlists in the sidebar.
+         * Initializes the song list on load.
          */
-        function renderPlaylists() {
-            playlistsList.innerHTML = '';
-            if (userPlaylists.length === 0) {
-                playlistsList.innerHTML = '<li class="text-xs text-text-muted p-2">Create your first playlist!</li>';
-                return;
-            }
-
-            userPlaylists.forEach(playlist => {
-                const li = document.createElement('li');
-                const link = document.createElement('a');
-                link.href = '#';
-                link.textContent = playlist.name;
-                link.className = 'block p-2 rounded-lg hover:bg-card-dark transition duration-150';
-                link.setAttribute('data-playlist-id', playlist.id);
-                
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    switchView(playlist.id, playlist.name, playlist.songs);
-                });
-
-                li.appendChild(link);
-                playlistsList.appendChild(li);
-            });
+        function initializeSongView() {
+            allSongs = getFullSongLibrary();
+            renderSongList(allSongs);
             
-            // Highlight active playlist in the sidebar
-            document.querySelectorAll('#playlists-list a').forEach(a => {
-                a.classList.remove('bg-card-dark', 'text-text-light');
-                a.classList.add('text-text-muted');
-                if (a.getAttribute('data-playlist-id') === activeView) {
-                    a.classList.add('bg-card-dark', 'text-text-light');
-                    a.classList.remove('text-text-muted');
-                }
-            });
-        }
-        
-        /**
-         * Switches the main view between "All Songs" and a specific playlist.
-         */
-        function switchView(viewId, title = "All Songs", songList = defaultSongs) {
-            activeView = viewId;
-            mainHeaderTitle.textContent = title;
-            
-            // Set the subtitle and the song list to render
-            if (viewId === 'allSongs') {
-                allSongs = [...defaultSongs, ...userPlaylists.flatMap(p => p.songs).filter((v, i, a) => a.indexOf(v) === i)]; // Simple merge and deduplicate
-                mainHeaderSubtitle.textContent = "Master list of all available tracks.";
-                renderSongList(allSongs);
-                homeNav.classList.add('bg-card-dark');
-                document.querySelectorAll('#playlists-list a').forEach(a => a.classList.remove('bg-card-dark', 'text-text-light'));
-            } else {
-                // Prepare the list of song objects for the selected playlist
-                const playlistSongs = songList.map(id => getSongById(id)).filter(s => s);
-                allSongs = playlistSongs; // Update the allSongs list to just the playlist songs for playback
-                mainHeaderSubtitle.textContent = `Playlist by user: ${userId.substring(0, 8)}...`;
-                renderSongList(allSongs);
-                homeNav.classList.remove('bg-card-dark');
-                renderPlaylists(); // Rerender to apply active style
+            if (allSongs.length > 0) {
+                loadSong(0); // Load the first song
             }
-            
-            currentSongIndex = -1; // Reset player state
-            pauseSong();
-            loadSong(0); // Load first song of the new view
-        }
-
-
-        // --- Firestore Data Operations ---
-
-        /**
-         * Adds a new user-defined song to the currently active playlist.
-         */
-        async function addSongToPlaylist(songData) {
-            if (!db || !userId) {
-                console.error("Firestore not initialized.");
-                return;
-            }
-            
-            if (activeView === 'allSongs') {
-                // If on 'All Songs' view, create a new 'User Songs' collection entry first
-                // For simplicity, we'll just add the song directly to the master list and ask the user to save a playlist.
-                const newSong = {
-                    ...songData,
-                    id: crypto.randomUUID(),
-                    album: songData.album || 'User Upload',
-                    cover: songData.cover || 'https://placehold.co/60x60/535353/ffffff?text=UPL'
-                };
-
-                // Add to the local master list
-                defaultSongs.push(newSong); 
-                
-                // Switch back to "All Songs" view to show the newly added track
-                switchView('allSongs');
-                
-                // Provide feedback (using the modal's error field temporarily)
-                document.getElementById('add-song-error').textContent = `Song "${newSong.title}" added! Save a new playlist to keep it.`;
-                document.getElementById('add-song-error').classList.remove('hidden', 'text-alert-red');
-                document.getElementById('add-song-error').classList.add('text-accent-green');
-                setTimeout(() => closeModal(), 3000);
-
-            } else {
-                // If on a specific playlist view, add the new song to that playlist in Firestore
-                // First, create the song object and add it to the local master list
-                const newSongId = crypto.randomUUID();
-                const newSong = {
-                    ...songData,
-                    id: newSongId,
-                    album: songData.album || 'User Upload',
-                    cover: songData.cover || 'https://placehold.co/60x60/535353/ffffff?text=UPL'
-                };
-                defaultSongs.push(newSong);
-
-                // Then, update the playlist document in Firestore
-                const playlistRef = doc(db, 'artifacts', appId, 'public', 'data', 'playlists', activeView);
-                
-                const currentPlaylist = userPlaylists.find(p => p.id === activeView);
-                if (currentPlaylist) {
-                    currentPlaylist.songs.push(newSongId);
-                    
-                    try {
-                        await setDoc(playlistRef, { songs: currentPlaylist.songs }, { merge: true });
-                        console.log("Song added to playlist successfully.");
-                        closeModal();
-                    } catch (e) {
-                        console.error("Error adding song to playlist:", e);
-                        document.getElementById('add-song-error').textContent = "Failed to save song to playlist. Check console for details.";
-                        document.getElementById('add-song-error').classList.remove('hidden');
-                    }
-                }
-            }
-        }
-
-        /**
-         * Creates a new playlist in Firestore.
-         */
-        async function createNewPlaylist(playlistName) {
-            if (!db || !userId) {
-                document.getElementById('create-playlist-error').textContent = "Authentication not ready. Please wait.";
-                document.getElementById('create-playlist-error').classList.remove('hidden');
-                return;
-            }
-            
-            // Simple validation
-            if (playlistName.trim() === '') {
-                document.getElementById('create-playlist-error').textContent = "Playlist name cannot be empty.";
-                document.getElementById('create-playlist-error').classList.remove('hidden');
-                return;
-            }
-            
-            try {
-                const playlistRef = collection(db, 'artifacts', appId, 'public', 'data', 'playlists');
-                await addDoc(playlistRef, {
-                    name: playlistName,
-                    userId: userId,
-                    songs: [], // Start with an empty list of song IDs
-                    createdAt: serverTimestamp()
-                });
-                
-                console.log(`Playlist "${playlistName}" created successfully.`);
-                closeModal();
-            } catch (e) {
-                console.error("Error creating playlist:", e);
-                document.getElementById('create-playlist-error').textContent = "Failed to create playlist. Check console.";
-                document.getElementById('create-playlist-error').classList.remove('hidden');
-            }
-        }
-
-        /**
-         * Listens for real-time updates to user playlists from Firestore.
-         */
-        function setupPlaylistListener() {
-            if (!db || !userId) return;
-
-            const q = collection(db, 'artifacts', appId, 'public', 'data', 'playlists');
-            
-            onSnapshot(q, (snapshot) => {
-                const loadedPlaylists = [];
-                snapshot.forEach((doc) => {
-                    loadedPlaylists.push({ id: doc.id, ...doc.data() });
-                });
-                userPlaylists = loadedPlaylists;
-                console.log("Playlists loaded:", userPlaylists.length);
-                renderPlaylists();
-                
-                // If a playlist was deleted, switch back to allSongs view
-                if (activeView !== 'allSongs' && !userPlaylists.some(p => p.id === activeView)) {
-                    switchView('allSongs');
-                } else if (activeView !== 'allSongs') {
-                    // If the active playlist was updated, re-render the song list
-                    const activePlaylist = userPlaylists.find(p => p.id === activeView);
-                    if (activePlaylist) {
-                        switchView(activePlaylist.id, activePlaylist.name, activePlaylist.songs);
-                    }
-                }
-            }, (error) => {
-                console.error("Error listening to playlists:", error);
-                playlistsList.innerHTML = '<li class="text-alert-red text-xs p-2">Error loading data.</li>';
-            });
         }
 
 
         // --- Event Listeners and Initial Setup ---
 
-        // 1. Firebase Initialization and Auth
+        // 1. Firebase Initialization (Just for auth requirement)
         async function initializeFirebase() {
             try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
+                const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
 
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         userId = user.uid;
-                        isAuthReady = true;
-                        console.log("Authenticated with User ID:", userId);
-                        setupPlaylistListener(); // Start listening for playlists after auth is ready
-                        switchView('allSongs'); // Render initial view
+                        console.log("Authenticated User ID:", userId);
                     } else {
-                        // Sign in anonymously if no token, otherwise use custom token
                         if (initialAuthToken) {
                             await signInWithCustomToken(auth, initialAuthToken);
                         } else {
                             await signInAnonymously(auth);
-                            // This listener will be called again with the signed-in user
                         }
                     }
                 });
             } catch (e) {
-                console.error("Firebase Initialization Error:", e);
+                console.error("Firebase Auth Initialization Error:", e);
             }
         }
-
 
         // 2. Player Controls
         playPauseBtn.addEventListener('click', togglePlayPause);
@@ -753,68 +506,17 @@
         // 7. Song Ended (Auto-play next)
         audio.addEventListener('ended', playNext);
 
-
-        // --- Modal and Form Handlers ---
-
-        // Open Add Song Modal
-        addSongBtn.addEventListener('click', () => {
-            document.getElementById('add-song-form').reset();
-            document.getElementById('add-song-error').classList.add('hidden');
-            document.getElementById('add-song-error').classList.remove('text-accent-green');
-            openModal(addSongModal);
-        });
-        
-        // Cancel Add Song Modal
-        document.getElementById('cancel-add-song-btn').addEventListener('click', closeModal);
-        
-        // Submit Add Song Form
-        document.getElementById('add-song-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const title = document.getElementById('song-title-input').value.trim();
-            const artist = document.getElementById('song-artist-input').value.trim();
-            const src = document.getElementById('song-url-input').value.trim();
-            
-            if (title && artist && src) {
-                const newSong = { title, artist, src, album: "User Upload", duration: "???" }; // Duration will update on play
-                addSongToPlaylist(newSong);
-            } else {
-                document.getElementById('add-song-error').textContent = "Please ensure Title, Artist, and MP3 URL are provided.";
-                document.getElementById('add-song-error').classList.remove('hidden');
-                document.getElementById('add-song-error').classList.add('text-alert-red');
-            }
-        });
-
-        // Open Create Playlist Modal
-        createPlaylistBtn.addEventListener('click', () => {
-            document.getElementById('create-playlist-form').reset();
-            document.getElementById('create-playlist-error').classList.add('hidden');
-            openModal(createPlaylistModal);
-        });
-        
-        // Cancel Create Playlist Modal
-        document.getElementById('cancel-create-playlist-btn').addEventListener('click', closeModal);
-        
-        // Submit Create Playlist Form
-        document.getElementById('create-playlist-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('playlist-name-input').value.trim();
-            if (name) {
-                createNewPlaylist(name);
-            } else {
-                document.getElementById('create-playlist-error').classList.remove('hidden');
-            }
-        });
-        
-        // Home Navigation (All Songs)
+        // 8. Home Navigation (Reloads view with all songs)
         homeNav.addEventListener('click', (e) => {
             e.preventDefault();
-            switchView('allSongs');
+            initializeSongView();
         });
 
 
-        // 8. Initialize on DOM Load
+        // 9. Initialize on DOM Load
         document.addEventListener('DOMContentLoaded', () => {
             initializeFirebase();
+            initializeSongView();
         });
 
     </script>
