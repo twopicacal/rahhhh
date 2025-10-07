@@ -162,7 +162,8 @@
         </div>
 
         <!-- 3. Volume Control (Right) -->
-        <div class="flex items-center space-x-2 justify-end w-1/3 hidden md:flex">
+        <!-- Changed justify-end to justify-center to help with the "not centered" feeling -->
+        <div class="flex items-center space-x-2 justify-center w-1/3 hidden md:flex">
             <svg class="w-5 h-5 text-text-muted" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.98 7-4.78 7-8.77s-2.99-7.79-7-8.77z"/></svg>
             <input type="range" id="volume-control" value="100" min="0" max="100" class="w-24 h-1 appearance-none bg-text-muted/40 rounded-full cursor-pointer">
         </div>
@@ -170,8 +171,6 @@
 
 
     <script type="module">
-        // No Firebase imports are needed for this simple player version.
-
         // ----------------------------------------------------------------
         // V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
         //  THIS IS WHERE YOU PASTE YOUR CUSTOM MP3 LINKS (Currently empty as the main song is in 'defaultSongs')
@@ -226,15 +225,12 @@
         
         /**
          * Parses the raw URL string into structured song objects.
-         * (Currently not in use, as songs are defined in defaultSongs array)
          */
         function parseCustomUrls(urlStr) {
-            // Split by comma or newline, trim whitespace, and filter for valid http/https links
             const urls = urlStr.split(/[\s,]+/).map(url => url.trim()).filter(url => url.startsWith('http'));
             
             return urls.map((url, index) => ({
                 id: `custom-${index + 1}`,
-                // Generic metadata for user-added songs
                 title: `Custom Track ${index + 1}`,
                 artist: `User Upload`,
                 album: `Custom Links`,
@@ -280,6 +276,7 @@
             playerCover.src = song.cover;
             durationEl.textContent = song.duration || "0:00"; 
             currentTimeEl.textContent = "0:00"; 
+            progressBar.value = 0; // Reset progress bar
 
             document.querySelectorAll('.playlist-item').forEach(item => {
                 item.classList.remove('bg-accent-green/20', 'text-text-light');
@@ -301,8 +298,9 @@
                 return;
             }
 
+            // FIX: Use the dedicated playSong and pauseSong functions for correct state management
             if (isPlaying) {
-                audio.pause();
+                pauseSong();
             } else {
                 playSong();
             }
@@ -318,6 +316,9 @@
             pauseIcon.classList.remove('hidden');
         }
 
+        /**
+         * FIX: Explicit function to handle pausing, ensuring isPlaying state is updated.
+         */
         function pauseSong() {
             audio.pause();
             isPlaying = false;
@@ -329,14 +330,14 @@
             if (allSongs.length === 0) return;
             let nextIndex = (currentSongIndex + 1) % allSongs.length;
             loadSong(nextIndex);
-            playSong();
+            playSong(); // Automatically play the next song
         }
 
         function playPrev() {
             if (allSongs.length === 0) return;
             let prevIndex = (currentSongIndex - 1 + allSongs.length) % allSongs.length;
             loadSong(prevIndex);
-            playSong();
+            playSong(); // Automatically play the previous song
         }
 
         // --- UI Rendering ---
@@ -392,7 +393,9 @@
             renderSongList(allSongs);
             
             if (allSongs.length > 0) {
+                // Do not auto-play, just load the first song to show metadata
                 loadSong(0); 
+                pauseSong(); // Ensure player is in a paused state initially
             }
         }
 
@@ -430,7 +433,6 @@
 
         homeNav.addEventListener('click', (e) => {
             e.preventDefault();
-            // This now runs unconditionally as there is no user authentication check
             initPlayerLogic();
         });
 
