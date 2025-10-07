@@ -71,11 +71,11 @@
         <div id="sidebar" class="w-64 bg-black p-4 flex-shrink-0 hidden md:block overflow-y-auto">
             <div class="space-y-4">
                 
-                <!-- Authentication Section (Dynamic) -->
+                <!-- Player Status Section (Static) -->
                 <div id="auth-section" class="mb-6">
-                    <!-- Auth UI will be rendered here by JavaScript -->
                     <div class="text-3xl font-bold text-accent-green mb-4">StreamWave</div>
-                    <p class="text-text-muted text-sm">Initializing...</p>
+                    <!-- This now shows the static player status -->
+                    <p class="text-text-muted text-sm font-semibold">Player Initialized</p>
                 </div>
                 
                 <!-- Navigation -->
@@ -170,17 +170,7 @@
 
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // Updated imports for Google Sign-In
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        // --- Firebase Configuration (Authentication Only) ---
-        // These variables are provided by the environment for initialization
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        let auth, userId = null;
-
+        // No Firebase imports are needed for this simple player version.
 
         // ----------------------------------------------------------------
         // V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
@@ -251,70 +241,10 @@
         const playerArtist = document.getElementById('player-artist');
         const playerCover = document.getElementById('player-cover');
         const homeNav = document.getElementById('home-nav');
-        const authSection = document.getElementById('auth-section'); // New Auth UI element
+        const authSection = document.getElementById('auth-section');
 
 
-        // --- Authentication Functions ---
-        
-        /**
-         * Initiates the Google Sign-In popup flow.
-         */
-        function signInWithGoogle() {
-            const provider = new GoogleAuthProvider();
-            // We use signInWithPopup which is ideal for a web application
-            signInWithPopup(auth, provider).catch((error) => {
-                // If sign-in fails (e.g., user closes popup)
-                console.error("Google Sign-In failed:", error.code, error.message);
-            });
-        }
-
-        /**
-         * Signs the current user out.
-         */
-        function signOutUser() {
-            signOut(auth).catch((error) => {
-                console.error("Sign Out failed:", error);
-            });
-        }
-        
-        /**
-         * Renders the authentication UI based on login status.
-         */
-        function renderAuthUI(user) {
-            authSection.innerHTML = ''; // Clear existing content
-            
-            if (user) {
-                // Logged In State: Show user info and Sign Out button
-                authSection.innerHTML = `
-                    <div class="text-3xl font-bold text-accent-green mb-4">StreamWave</div>
-                    <div class="flex items-center space-x-3 p-2 bg-card-dark rounded-lg">
-                        <img src="${user.photoURL || 'https://placehold.co/40x40/1DB954/ffffff?text=U'}" 
-                             onerror="this.onerror=null;this.src='https://placehold.co/40x40/1DB954/ffffff?text=U';" 
-                             alt="Profile" class="w-10 h-10 rounded-full">
-                        <div class="truncate">
-                            <p class="text-sm font-semibold truncate">${user.displayName || user.email}</p>
-                            <p class="text-xs text-text-muted">Signed In</p>
-                        </div>
-                    </div>
-                    <button id="sign-out-btn" class="w-full mt-2 p-3 rounded-lg bg-red-600 text-text-light font-bold hover:bg-red-700 transition">Sign Out</button>
-                `;
-                document.getElementById('sign-out-btn').addEventListener('click', signOutUser);
-            } else {
-                // Logged Out State: Show logo and Sign In button
-                authSection.innerHTML = `
-                    <div class="text-3xl font-bold text-accent-green mb-4">StreamWave</div>
-                    <p class="text-text-muted text-sm mb-3">Please sign in to access the player.</p>
-                    <button id="sign-in-btn" class="w-full p-3 rounded-lg bg-accent-green text-black font-bold hover:bg-opacity-80 transition flex items-center justify-center space-x-2 shadow-lg">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.001c1.884 0 3.665.655 5.061 1.834l2.5-2.5A9.957 9.957 0 0 0 12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c2.41 0 4.67-.85 6.44-2.33l-2.73-2.13c-1.39 1.14-3.14 1.77-5.01 1.77-3.87 0-7.14-2.67-8.23-6.28h3.1v-3.04H2v-1.16c0-5.52 4.48-10 10-10zm.004 3.01c-3.14 0-5.7 2.56-5.7 5.7s2.56 5.7 5.7 5.7 5.7-2.56 5.7-5.7-2.56-5.7-5.7-5.7z" fill="#000000"/></svg>
-                        <span>Sign in with Google</span>
-                    </button>
-                `;
-                document.getElementById('sign-in-btn').addEventListener('click', signInWithGoogle);
-            }
-        }
-
-
-        // --- Utility Functions (Remaining functions kept from previous version) ---
+        // --- Utility Functions ---
         
         /**
          * Parses the raw URL string into structured song objects.
@@ -469,39 +399,21 @@
             });
         }
         
-        function initializeSongView() {
+        /**
+         * Initializes the player logic and UI unconditionally (no auth required).
+         */
+        function initPlayerLogic() {
+            // Update the sidebar status
+            authSection.innerHTML = `
+                <div class="text-3xl font-bold text-accent-green mb-4">StreamWave</div>
+                <p class="text-text-muted text-sm font-semibold">Player Initialized</p>
+            `;
+
             allSongs = getFullSongLibrary();
             renderSongList(allSongs);
             
             if (allSongs.length > 0) {
                 loadSong(0); 
-            }
-        }
-
-
-        // --- Firebase Initialization and Auth Listener ---
-
-        async function initializeFirebase() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                
-                // Use onAuthStateChanged to manage the UI state
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        renderAuthUI(user);
-                        // Once signed in, initialize the player content
-                        initializeSongView(); 
-                    } else {
-                        userId = null;
-                        renderAuthUI(null);
-                    }
-                });
-            } catch (e) {
-                console.error("Firebase Auth Initialization Error:", e);
-                // Fallback for initialization failure
-                authSection.innerHTML = '<p class="text-alert-red text-sm">Error initializing Firebase.</p>';
             }
         }
 
@@ -539,13 +451,14 @@
 
         homeNav.addEventListener('click', (e) => {
             e.preventDefault();
-            initializeSongView();
+            // This now runs unconditionally as there is no user authentication check
+            initPlayerLogic();
         });
 
 
         // 9. Initialize on DOM Load
         document.addEventListener('DOMContentLoaded', () => {
-            initializeFirebase();
+            initPlayerLogic();
         });
 
     </script>
