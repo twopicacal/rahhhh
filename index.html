@@ -70,8 +70,13 @@
         <!-- Sidebar Navigation -->
         <div id="sidebar" class="w-64 bg-black p-4 flex-shrink-0 hidden md:block overflow-y-auto">
             <div class="space-y-4">
-                <!-- Logo -->
-                <div class="text-3xl font-bold text-accent-green mb-6">StreamWave</div>
+                
+                <!-- Authentication Section (Dynamic) -->
+                <div id="auth-section" class="mb-6">
+                    <!-- Auth UI will be rendered here by JavaScript -->
+                    <div class="text-3xl font-bold text-accent-green mb-4">StreamWave</div>
+                    <p class="text-text-muted text-sm">Initializing...</p>
+                </div>
                 
                 <!-- Navigation -->
                 <nav class="space-y-2">
@@ -86,7 +91,7 @@
                 <!-- Simple Information Block -->
                 <div class="p-2 text-text-muted text-xs bg-card-dark rounded-lg">
                     <p class="font-bold text-accent-green mb-1">Song List Managed in Code</p>
-                    <p>To add or remove songs, edit the **`CUSTOM_SONG_URLS_STRING`** variable in the script section below.</p>
+                    <p>Edit the **`CUSTOM_SONG_URLS_STRING`** variable in the script section to change the tracks.</p>
                 </div>
             </div>
         </div>
@@ -166,11 +171,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // Removed Firestore imports for simplicity
+        // Updated imports for Google Sign-In
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // --- Firebase Configuration (Authentication Only) ---
-        // This is kept only to satisfy the environment requirements for authentication.
+        // These variables are provided by the environment for initialization
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -181,14 +186,12 @@
         // V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
         //  THIS IS WHERE YOU PASTE YOUR CUSTOM MP3 LINKS
         //  - Add one link per line or keep them separated by a comma (,)
-        //  - Make sure your links start with 'http' or 'https'
+        //  - Use direct streaming links (e.g., Dropbox ?raw=1)
         // ----------------------------------------------------------------
         const CUSTOM_SONG_URLS_STRING = `
-            https://jumpshare.com/s/dLu0FIUt8x97WLGFY0IA
-            https://jumpshare.com/s/dLu0FIUt8x97WLGFY0IA
-            https://jumpshare.com/s/dLu0FIUt8x97WLGFY0IA
-            https://jumpshare.com/s/dLu0FIUt8x97WLGFY0IA
-            // Add more MP3 links here, separated by a comma.
+            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3,
+            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3,
+            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3,
         `;
         // ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
         // ----------------------------------------------------------------
@@ -198,37 +201,36 @@
         const defaultSongs = [
             {
                 id: 'default-1',
-                title: "Sunset1 Drive",
+                title: "Sunset Drive",
                 artist: "Chillwave Collective",
                 album: "Neon Echoes",
                 duration: "3:45",
-                src: "https://jumpshare.com/s/dLu0FIUt8x97WLGFY0IA",
- 
+                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
                 cover: "https://placehold.co/60x60/10b981/ffffff?text=Chill"
             },
             {
                 id: 'default-2',
-                title: "Cosm2ic Flow",
-                artist: "Star2light DJ",
+                title: "Cosmic Flow",
+                artist: "Starlight DJ",
                 album: "Deep Space",
                 duration: "4:12",
-                src: "https://jumpshare.com/s/dLu0FIUt8x97WLGFY0IA",
+                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
                 cover: "https://placehold.co/60x60/f97316/ffffff?text=Flow"
             },
             {
                 id: 'default-3',
-                title: "Urban 3Rhapsody",
-                artist: "The3 City Beat",
+                title: "Urban Rhapsody",
+                artist: "The City Beat",
                 album: "Asphalt Dreams",
                 duration: "2:58",
-                src: "https://jumpshare.com/s/dLu0FIUt8x97WLGFY0IA",
+                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
                 cover: "https://placehold.co/60x60/6366f1/ffffff?text=Urban"
             }
         ];
         
         // --- Song List State ---
-        let customSongs = []; // Songs parsed from the CUSTOM_SONG_URLS_STRING
-        let allSongs = []; // The combined master list
+        let customSongs = []; 
+        let allSongs = []; 
         let currentSongIndex = -1;
         let isPlaying = false;
 
@@ -249,10 +251,71 @@
         const playerArtist = document.getElementById('player-artist');
         const playerCover = document.getElementById('player-cover');
         const homeNav = document.getElementById('home-nav');
+        const authSection = document.getElementById('auth-section'); // New Auth UI element
 
 
-        // --- Utility Functions ---
+        // --- Authentication Functions ---
+        
+        /**
+         * Initiates the Google Sign-In popup flow.
+         */
+        function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            // We use signInWithPopup which is ideal for a web application
+            signInWithPopup(auth, provider).catch((error) => {
+                // If sign-in fails (e.g., user closes popup)
+                console.error("Google Sign-In failed:", error.code, error.message);
+            });
+        }
 
+        /**
+         * Signs the current user out.
+         */
+        function signOutUser() {
+            signOut(auth).catch((error) => {
+                console.error("Sign Out failed:", error);
+            });
+        }
+        
+        /**
+         * Renders the authentication UI based on login status.
+         */
+        function renderAuthUI(user) {
+            authSection.innerHTML = ''; // Clear existing content
+            
+            if (user) {
+                // Logged In State: Show user info and Sign Out button
+                authSection.innerHTML = `
+                    <div class="text-3xl font-bold text-accent-green mb-4">StreamWave</div>
+                    <div class="flex items-center space-x-3 p-2 bg-card-dark rounded-lg">
+                        <img src="${user.photoURL || 'https://placehold.co/40x40/1DB954/ffffff?text=U'}" 
+                             onerror="this.onerror=null;this.src='https://placehold.co/40x40/1DB954/ffffff?text=U';" 
+                             alt="Profile" class="w-10 h-10 rounded-full">
+                        <div class="truncate">
+                            <p class="text-sm font-semibold truncate">${user.displayName || user.email}</p>
+                            <p class="text-xs text-text-muted">Signed In</p>
+                        </div>
+                    </div>
+                    <button id="sign-out-btn" class="w-full mt-2 p-3 rounded-lg bg-red-600 text-text-light font-bold hover:bg-red-700 transition">Sign Out</button>
+                `;
+                document.getElementById('sign-out-btn').addEventListener('click', signOutUser);
+            } else {
+                // Logged Out State: Show logo and Sign In button
+                authSection.innerHTML = `
+                    <div class="text-3xl font-bold text-accent-green mb-4">StreamWave</div>
+                    <p class="text-text-muted text-sm mb-3">Please sign in to access the player.</p>
+                    <button id="sign-in-btn" class="w-full p-3 rounded-lg bg-accent-green text-black font-bold hover:bg-opacity-80 transition flex items-center justify-center space-x-2 shadow-lg">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.001c1.884 0 3.665.655 5.061 1.834l2.5-2.5A9.957 9.957 0 0 0 12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c2.41 0 4.67-.85 6.44-2.33l-2.73-2.13c-1.39 1.14-3.14 1.77-5.01 1.77-3.87 0-7.14-2.67-8.23-6.28h3.1v-3.04H2v-1.16c0-5.52 4.48-10 10-10zm.004 3.01c-3.14 0-5.7 2.56-5.7 5.7s2.56 5.7 5.7 5.7 5.7-2.56 5.7-5.7-2.56-5.7-5.7-5.7z" fill="#000000"/></svg>
+                        <span>Sign in with Google</span>
+                    </button>
+                `;
+                document.getElementById('sign-in-btn').addEventListener('click', signInWithGoogle);
+            }
+        }
+
+
+        // --- Utility Functions (Remaining functions kept from previous version) ---
+        
         /**
          * Parses the raw URL string into structured song objects.
          */
@@ -276,7 +339,6 @@
          * Returns the combined master list of hardcoded and custom-added songs.
          */
         function getFullSongLibrary() {
-            // Recalculate the custom list from the source string
             customSongs = parseCustomUrls(CUSTOM_SONG_URLS_STRING);
             return [...defaultSongs, ...customSongs];
         }
@@ -292,14 +354,9 @@
         
         
         // --- Core Player Functions ---
-
-        /**
-         * Loads and prepares a song for playback.
-         */
+        
         function loadSong(index) {
             if (index < 0 || index >= allSongs.length) return;
-
-            // Update current index and UI details
             currentSongIndex = index;
             const song = allSongs[currentSongIndex];
             
@@ -312,10 +369,9 @@
             playerTitle.textContent = song.title;
             playerArtist.textContent = song.artist;
             playerCover.src = song.cover;
-            durationEl.textContent = song.duration || "0:00"; // Use placeholder if duration is unknown
-            currentTimeEl.textContent = "0:00"; // Reset time display
+            durationEl.textContent = song.duration || "0:00"; 
+            currentTimeEl.textContent = "0:00"; 
 
-            // Update active state in playlist UI
             document.querySelectorAll('.playlist-item').forEach(item => {
                 item.classList.remove('bg-accent-green/20', 'text-text-light');
                 item.classList.add('hover:bg-card-dark', 'text-text-muted');
@@ -327,12 +383,8 @@
             }
         }
 
-        /**
-         * Starts or pauses playback.
-         */
         function togglePlayPause() {
             if (currentSongIndex === -1) {
-                // If no song loaded, load the first one from the current view list
                 if (allSongs.length > 0) {
                     loadSong(0);
                     playSong();
@@ -347,23 +399,16 @@
             }
         }
 
-        /**
-         * Plays the currently loaded song.
-         */
         function playSong() {
             if (currentSongIndex === -1) return;
             audio.play().catch(error => {
-                console.error("Playback failed (possibly due to browser auto-play policy or bad link):", error);
-                // Simple console message for playback failure
+                console.error("Playback failed (browser auto-play policy or bad link):", error);
             });
             isPlaying = true;
             playIcon.classList.add('hidden');
             pauseIcon.classList.remove('hidden');
         }
 
-        /**
-         * Pauses the currently playing song.
-         */
         function pauseSong() {
             audio.pause();
             isPlaying = false;
@@ -371,9 +416,6 @@
             playIcon.classList.remove('hidden');
         }
 
-        /**
-         * Plays the next song in the playlist.
-         */
         function playNext() {
             if (allSongs.length === 0) return;
             let nextIndex = (currentSongIndex + 1) % allSongs.length;
@@ -381,9 +423,6 @@
             playSong();
         }
 
-        /**
-         * Plays the previous song in the playlist.
-         */
         function playPrev() {
             if (allSongs.length === 0) return;
             let prevIndex = (currentSongIndex - 1 + allSongs.length) % allSongs.length;
@@ -393,11 +432,8 @@
 
         // --- UI Rendering ---
 
-        /**
-         * Renders the current list of songs into the main content area.
-         */
         function renderSongList(songsToRender) {
-            playlistContainer.innerHTML = ''; // Clear existing content
+            playlistContainer.innerHTML = ''; 
             
             if (songsToRender.length === 0) {
                 playlistContainer.innerHTML = '<p class="text-text-muted p-4 text-center">No songs in the library. Add MP3 links to the **CUSTOM_SONG_URLS_STRING** in the code!</p>';
@@ -410,7 +446,6 @@
                 item.className = 'playlist-item grid grid-cols-[30px_1fr_150px_80px] p-2 rounded-lg text-text-muted text-sm hover:bg-card-dark transition duration-150 cursor-pointer items-center';
                 item.setAttribute('data-id', song.id);
                 
-                // Add click listener to play the song
                 item.addEventListener('click', () => {
                     const songIndex = allSongs.findIndex(s => s.id === song.id);
                     if (songIndex === currentSongIndex) {
@@ -434,81 +469,74 @@
             });
         }
         
-        /**
-         * Initializes the song list on load.
-         */
         function initializeSongView() {
             allSongs = getFullSongLibrary();
             renderSongList(allSongs);
             
             if (allSongs.length > 0) {
-                loadSong(0); // Load the first song
+                loadSong(0); 
             }
         }
 
 
-        // --- Event Listeners and Initial Setup ---
+        // --- Firebase Initialization and Auth Listener ---
 
-        // 1. Firebase Initialization (Just for auth requirement)
         async function initializeFirebase() {
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
-
-                onAuthStateChanged(auth, async (user) => {
+                
+                // Use onAuthStateChanged to manage the UI state
+                onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId = user.uid;
-                        console.log("Authenticated User ID:", userId);
+                        renderAuthUI(user);
+                        // Once signed in, initialize the player content
+                        initializeSongView(); 
                     } else {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
+                        userId = null;
+                        renderAuthUI(null);
                     }
                 });
             } catch (e) {
                 console.error("Firebase Auth Initialization Error:", e);
+                // Fallback for initialization failure
+                authSection.innerHTML = '<p class="text-alert-red text-sm">Error initializing Firebase.</p>';
             }
         }
 
-        // 2. Player Controls
+        // --- Event Listeners ---
+
         playPauseBtn.addEventListener('click', togglePlayPause);
         nextBtn.addEventListener('click', playNext);
         prevBtn.addEventListener('click', playPrev);
 
-        // 3. Volume Control
         volumeControl.addEventListener('input', (e) => {
             audio.volume = e.target.value / 100;
         });
         audio.volume = volumeControl.value / 100;
 
-        // 4. Audio Time Update (Progress Bar)
         audio.addEventListener('timeupdate', () => {
             currentTimeEl.textContent = formatTime(audio.currentTime);
             const progress = (audio.currentTime / audio.duration) * 100;
             progressBar.value = isNaN(progress) ? 0 : progress;
         });
 
-        // 5. Audio Metadata Loaded
         audio.addEventListener('loadedmetadata', () => {
             const totalDuration = formatTime(audio.duration);
             durationEl.textContent = totalDuration;
-            progressBar.max = 100; // Keep max at 100 for percentage
+            progressBar.max = 100; 
             progressBar.value = 0;
         });
 
-        // 6. Progress Bar Seeking
         progressBar.addEventListener('input', (e) => {
             const seekTime = (e.target.value / 100) * audio.duration;
             audio.currentTime = seekTime;
             currentTimeEl.textContent = formatTime(seekTime);
         });
 
-        // 7. Song Ended (Auto-play next)
         audio.addEventListener('ended', playNext);
 
-        // 8. Home Navigation (Reloads view with all songs)
         homeNav.addEventListener('click', (e) => {
             e.preventDefault();
             initializeSongView();
@@ -518,7 +546,6 @@
         // 9. Initialize on DOM Load
         document.addEventListener('DOMContentLoaded', () => {
             initializeFirebase();
-            initializeSongView();
         });
 
     </script>
