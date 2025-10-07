@@ -91,7 +91,7 @@
                 <!-- Simple Information Block -->
                 <div class="p-2 text-text-muted text-xs bg-card-dark rounded-lg">
                     <p class="font-bold text-accent-green mb-1">Song List Managed in Code</p>
-                    <p>Edit the **`CUSTOM_SONG_URLS_STRING`** variable in the script section to change the tracks.</p>
+                    <p>Edit the **`defaultSongs`** array in the script section to change the tracks.</p>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
             <header class="mb-8 flex justify-between items-center">
                 <div>
                     <h1 id="main-header-title" class="text-4xl md:text-5xl font-extrabold mb-2">StreamWave Library</h1>
-                    <p id="main-header-subtitle" class="text-text-muted">Master list of all available tracks (Hardcoded + Custom Links).</p>
+                    <p id="main-header-subtitle" class="text-text-muted">Master list of all available tracks (Cloudinary Link Loaded).</p>
                 </div>
             </header>
 
@@ -174,47 +174,25 @@
 
         // ----------------------------------------------------------------
         // V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
-        //  THIS IS WHERE YOU PASTE YOUR CUSTOM MP3 LINKS
-        //  - Add one link per line or keep them separated by a comma (,)
-        //  - Use direct streaming links (e.g., Dropbox ?raw=1)
+        //  THIS IS WHERE YOU PASTE YOUR CUSTOM MP3 LINKS (Currently empty as the main song is in 'defaultSongs')
         // ----------------------------------------------------------------
-        const CUSTOM_SONG_URLS_STRING = `
-            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3,
-            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3,
-            https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3,
-        `;
+        const CUSTOM_SONG_URLS_STRING = ``;
         // ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
         // ----------------------------------------------------------------
 
 
         // --- Default Songs (Hardcoded) ---
+        // This array now contains your Cloudinary track. Add more songs here!
         const defaultSongs = [
             {
-                id: 'default-1',
-                title: "Sunset Drive",
-                artist: "Chillwave Collective",
-                album: "Neon Echoes",
-                duration: "3:45",
-                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", 
-                cover: "https://placehold.co/60x60/10b981/ffffff?text=Chill"
-            },
-            {
-                id: 'default-2',
-                title: "Cosmic Flow",
-                artist: "Starlight DJ",
-                album: "Deep Space",
-                duration: "4:12",
-                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-                cover: "https://placehold.co/60x60/f97316/ffffff?text=Flow"
-            },
-            {
-                id: 'default-3',
-                title: "Urban Rhapsody",
-                artist: "The City Beat",
-                album: "Asphalt Dreams",
-                duration: "2:58",
-                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-                cover: "https://placehold.co/60x60/6366f1/ffffff?text=Urban"
+                id: 'cloudinary-1',
+                title: "Home 2019 Remaster",
+                artist: "Twopical",
+                album: "Twopicals Special",
+                duration: "5:04",
+                src: "https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759872087/Home_-_2019_Remaster_pvx9bn.mp3", 
+                // Placeholder image. Please replace this URL with your actual Cloudinary cover image link!
+                cover: "https://placehold.co/60x60/1DB954/ffffff?text=TWP" 
             }
         ];
         
@@ -248,6 +226,7 @@
         
         /**
          * Parses the raw URL string into structured song objects.
+         * (Currently not in use, as songs are defined in defaultSongs array)
          */
         function parseCustomUrls(urlStr) {
             // Split by comma or newline, trim whitespace, and filter for valid http/https links
@@ -366,7 +345,7 @@
             playlistContainer.innerHTML = ''; 
             
             if (songsToRender.length === 0) {
-                playlistContainer.innerHTML = '<p class="text-text-muted p-4 text-center">No songs in the library. Add MP3 links to the **CUSTOM_SONG_URLS_STRING** in the code!</p>';
+                playlistContainer.innerHTML = '<p class="text-text-muted p-4 text-center">No songs in the library. Add tracks to the **defaultSongs** array in the code!</p>';
                 return;
             }
 
