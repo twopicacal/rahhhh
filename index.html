@@ -90,8 +90,8 @@
 
                 <!-- Simple Information Block -->
                 <div class="p-2 text-text-muted text-xs bg-card-dark rounded-lg">
-                    <p class="font-bold text-accent-green mb-1">Song List Managed in Code</p>
-                    <p>Edit the **`defaultSongs`** array in the script section to change the tracks.</p>
+                    <p class="font-bold text-accent-green mb-1">EASY SONG INPUT</p>
+                    <p>Edit the **`USER_SONG_CSV_DATA`** block in the script to add/remove tracks fast.</p>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
             <header class="mb-8 flex justify-between items-center">
                 <div>
                     <h1 id="main-header-title" class="text-4xl md:text-5xl font-extrabold mb-2">StreamWave Library</h1>
-                    <p id="main-header-subtitle" class="text-text-muted">Master list of all available tracks (Cloudinary Link Loaded).</p>
+                    <p id="main-header-subtitle" class="text-text-muted">Master list of all available tracks (CSV Data Loaded).</p>
                 </div>
             </header>
 
@@ -156,7 +156,7 @@
             <!-- Progress Bar (Bottom Row) -->
             <div class="flex items-center space-x-2 w-full max-w-md">
                 <span id="current-time" class="text-xs text-text-muted w-10 text-center">0:00</span>
-                <input type="range" id="progress-bar" value="0" min="0" max="100" class="flex-grow h-1 appearance-none bg-text-muted/40 rounded-full cursor-pointer range-lg">
+                <input type="range" id="progress-bar" value="0" min="0" max="100" class="flex-grow h-1 appearance-none bg-accent-green/40 rounded-full cursor-pointer range-lg">
                 <span id="duration" class="text-xs text-text-muted w-10 text-center">0:00</span>
             </div>
         </div>
@@ -170,65 +170,41 @@
 
 
     <script type="module">
+        
         // ----------------------------------------------------------------
         // V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
-        //  THIS IS WHERE YOU PASTE YOUR CUSTOM MP3 LINKS (Currently empty as the main song is in 'defaultSongs')
+        // 1. PASTE YOUR SONG DATA HERE IN CSV FORMAT (Comma Separated Values)
+        //    Format: Title,Artist,Album,Duration (MM:SS),MP3_URL,Cover_Image_URL (Optional)
         // ----------------------------------------------------------------
-        const CUSTOM_SONG_URLS_STRING = ``;
+        const USER_SONG_CSV_DATA = `
+Home 2019 Remaster,Twopical,Twopicals Special,5:04,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759872087/Home_-_2019_Remaster_pvx9bn.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+King Of Nothing,Twopical,Twopicals Special,3:13,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759872080/King_Of_Nothing_lhnu8e.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Viva La Vida,Twopical,Twopicals Special,3:18,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871895/Viva_La_Vida_Sped_Up_vo5imz.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+I Ain't Worried,Twopical,Twopicals Special,2:28,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871895/I_Ain_t_Worried_yaqrrd.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+What Makes You Beautiful,Twopical,Twopicals Special,3:20,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871893/What_Makes_You_Beautiful_ys9wdg.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Pompeii,Twopical,Twopicals Special,3:34,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871892/Pompeii_bb9bmr.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Pumped Up Kicks,Twopical,Twopicals Special,3:59,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871891/Pumped_Up_Kicks_q9fujo.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Homesick,Twopical,Twopicals Special,2:39,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871891/Homesick_fxjwhq.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+She’s Kinda Hot,Twopical,Twopicals Special,3:36,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871888/She_s_Kinda_Hot_nppwli.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Cradles,Twopical,Twopicals Special,3:29,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871884/Cradles_skadk2.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Firework,Twopical,Twopicals Special,3:47,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871884/Firework_srkjsf.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Thunderstruck,Twopical,Twopicals Special,4:52,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871882/Thunderstruck_mnu5sh.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Sunflower,Twopical,Twopicals Special,2:38,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871881/Sunflower_-_Spider-Man_Into_the_Spider-Verse_uosf3a.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+Slow it Down,Twopical,Twopicals Special,2:41,https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871880/Slow_It_Down_zxgvhp.mp3,https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj
+
+
+`;
+        
         // ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
         // ----------------------------------------------------------------
 
 
-        // --- Default Songs (Hardcoded) ---
-        // This array now contains all four of your tracks!
-        const defaultSongs = [
-            {
-                id: 'cloudinary-1',
-                title: "Home 2019 Remaster",
-                artist: "Twopical",
-                album: "Twopicals Special",
-                duration: "5:04",
-                src: "https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759872087/Home_-_2019_Remaster_pvx9bn.mp3", 
-                // Cover image link
-                cover: "https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj"
-            },
-            {
-                id: 'cloudinary-2',
-                title: "King Of Nothing",
-                artist: "Twopical",
-                album: "Twopicals Special",
-                duration: "3:13", 
-                src: "https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759872080/King_Of_Nothing_lhnu8e.mp3", 
-                // Cover image link (same as above)
-                cover: "https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj"
-            },
-            {
-                id: 'cloudinary-3',
-                title: "Viva La Vida",
-                artist: "Twopical",
-                album: "Twopicals Special",
-                duration: "3:18", 
-                src: "https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871895/Viva_La_Vida_Sped_Up_vo5imz.mp3", 
-                // Cover image link (same as above)
-                cover: "https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj"
-            },
-            {
-                id: 'cloudinary-4',
-                title: "I Ain't Worried",
-                artist: "Twopical",
-                album: "Twopicals Special",
-                duration: "2:28", // New duration
-                src: "https://res.cloudinary.com/dsrdtjv9u/video/upload/v1759871895/I_Ain_t_Worried_yaqrrd.mp3", // New MP3 link
-                // Cover image link (same as above)
-                cover: "https://yt3.googleusercontent.com/ComwB0EYdEw_DBgGQ4g_yFrUziQsqn2yI94h7_RYm2wae9h18kqPKoUU9jfWVFPjzvPWN3jJIg=s160-c-k-c0x00ffffff-no-rj"
-            }
-        ];
-        
-        // --- Song List State ---
-        let customSongs = []; 
+        // --- Song List State & Constants ---
         let allSongs = []; 
         let currentSongIndex = -1;
         let isPlaying = false;
+        
+        const DEFAULT_COVER = "https://placehold.co/60x60/121212/ffffff?text=SW"; // Default cover if none is provided in CSV
 
 
         // --- DOM Elements ---
@@ -253,28 +229,44 @@
         // --- Utility Functions ---
         
         /**
-         * Parses the raw URL string into structured song objects.
+         * Parses the CSV-style song data string into an array of structured song objects.
          */
-        function parseCustomUrls(urlStr) {
-            const urls = urlStr.split(/[\s,]+/).map(url => url.trim()).filter(url => url.startsWith('http'));
+        function parseCsvData(csvString) {
+            if (!csvString || csvString.trim() === '') return [];
+
+            // Split into lines, filter out empty lines caused by padding
+            const lines = csvString.trim().split('\n').filter(line => line.trim() !== '');
             
-            return urls.map((url, index) => ({
-                id: `custom-${index + 1}`,
-                title: `Custom Track ${index + 1}`,
-                artist: `User Upload`,
-                album: `Custom Links`,
-                duration: "??",
-                src: url,
-                cover: "https://placehold.co/60x60/535353/ffffff?text=UPL"
-            }));
+            return lines.map((line, index) => {
+                // Use a simple split by comma. We must be careful about data order.
+                const parts = line.split(',');
+                
+                // Expecting at least: Title, Artist, Album, Duration, URL
+                if (parts.length < 5) {
+                    console.error(`Skipping invalid song data on line ${index + 1}: Not enough fields (Expected 5+ fields, got ${parts.length}).`);
+                    return null;
+                }
+
+                // Map and trim the parts to the song object structure
+                const [title, artist, album, duration, src, cover] = parts.map(p => p.trim());
+
+                return {
+                    id: `csv-${index + 1}`,
+                    title,
+                    artist,
+                    album: album || 'Unknown Album',
+                    duration: duration || '0:00',
+                    src,
+                    cover: cover || DEFAULT_COVER
+                };
+            }).filter(song => song !== null); // Filter out any lines that failed parsing
         }
 
         /**
-         * Returns the combined master list of hardcoded and custom-added songs.
+         * Returns the combined master list of all songs loaded from the CSV data.
          */
         function getFullSongLibrary() {
-            customSongs = parseCustomUrls(CUSTOM_SONG_URLS_STRING);
-            return [...defaultSongs, ...customSongs];
+            return parseCsvData(USER_SONG_CSV_DATA);
         }
 
         /**
@@ -307,6 +299,7 @@
             currentTimeEl.textContent = "0:00"; 
             progressBar.value = 0; // Reset progress bar
 
+            // Update playlist item styling
             document.querySelectorAll('.playlist-item').forEach(item => {
                 item.classList.remove('bg-accent-green/20', 'text-text-light');
                 item.classList.add('hover:bg-card-dark', 'text-text-muted');
@@ -338,6 +331,7 @@
             if (currentSongIndex === -1) return;
             audio.play().catch(error => {
                 console.error("Playback failed (browser auto-play policy or bad link):", error);
+                // Optionally show a message box here instead of console.error
             });
             isPlaying = true;
             playIcon.classList.add('hidden');
@@ -374,7 +368,7 @@
             playlistContainer.innerHTML = ''; 
             
             if (songsToRender.length === 0) {
-                playlistContainer.innerHTML = '<p class="text-text-muted p-4 text-center">No songs in the library. Add tracks to the **defaultSongs** array in the code!</p>';
+                playlistContainer.innerHTML = '<p class="text-text-muted p-4 text-center">No songs loaded. Please check the `USER_SONG_CSV_DATA` format.</p>';
                 return;
             }
 
@@ -408,7 +402,7 @@
         }
         
         /**
-         * Initializes the player logic and UI unconditionally (no auth required).
+         * Initializes the player logic and UI.
          */
         function initPlayerLogic() {
             // Update the sidebar status
@@ -421,9 +415,9 @@
             renderSongList(allSongs);
             
             if (allSongs.length > 0) {
-                // Do not auto-play, just load the first song to show metadata
+                // Load the first song to show metadata
                 loadSong(0); 
-                pauseSong(); // Ensure player is in a paused state initially
+                pauseSong(); 
             }
         }
 
@@ -465,7 +459,7 @@
         });
 
 
-        // 9. Initialize on DOM Load
+        // Initialize on DOM Load
         document.addEventListener('DOMContentLoaded', () => {
             initPlayerLogic();
         });
